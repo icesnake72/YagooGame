@@ -30,13 +30,19 @@
 * 327	// BINGO!!! CONGRATULATIONS!!! You have done at 6th time.
 */
 
+/*
+system ("/bin/stty raw");
+var = getchar();
+system ("/bin/stty cooked");
+*/
+
 
 //
 // 사용할 API(또는 Library)가 정의된 헤더파일을 먼저 지정해 주어야 한다.
 #include <stdio.h>
 #include <time.h>	// time()함수를 위해 사용
 #include <stdlib.h>	// srand(), rand()함수를 위해 사용
-#include <conio.h>	// _getch()를 위해 사용
+// #include <conio.h>	// _getch()를 위해 사용
 #include <ctype.h>	// isdigit()를 위해 사용
 
 #define GOAL_COUNT 3
@@ -61,11 +67,16 @@ int main()
 {		
 	randomize();	// 랜덤 초기화 함수 호출
 
+	for(int i=0; i<GOAL_COUNT; i++) {
+		nGoal[i] = 0;
+		nUser[i] = 0;
+	}
+
 	do {				
-#ifdef _DEBUG
+//#ifdef _DEBUG
 		int key = 0;
 		do {
-#endif
+//#endif
 			// 3자리의 랜덤 숫자를 생성한다.
 			for (int i = 0; i < GOAL_COUNT; i++) {
 				nGoal[i] = GetRandomValue(RAND_RANGE);	// 0~9의 랜덤한 숫자를 생성한다.
@@ -83,20 +94,22 @@ int main()
 					// 이전 생성값들과 현재 생성값을 비교해서 같으면 새로운 랜덤값을 만들어 다시 입력하고 돌아가서 비교하기를 반복 수행
 					nGoal[i] = GetRandomValue(RAND_RANGE);
 				}
-#ifdef _DEBUG
+//#ifdef _DEBUG
 				printf("nGoal[%u] = %u\n", i, nGoal[i]);	// 이 printf문은 값이 정상적으로 설정이 되어있는지 디버깅용 출력입니다. 추후에 주석처리 합시다.
-#endif
+//#endif
 			}
-#ifdef _DEBUG
+//#ifdef _DEBUG
 
 			int nRandValue = 0;
 			nRandValue = Array2Digit(nGoal);
 			printf("Random Value is %u\n", nRandValue);
 
 			printf("Press x key to quit to program, or any other key to continue : \n");
-			key = _getch();
+			// key = _getch();			
+			fflush( stdin );
+			scanf("%c", &key);
 		} while (key != TERMINATE);
-#endif
+//#endif
 
 		unsigned short nRes = 0;
 		do {
@@ -121,7 +134,9 @@ int main()
 
 		// 게임을 계속 진행할것인 물어본다.
 		printf("게임을 또 진행할까요?(y or x) : ");
-		unsigned char ch = _getch();
+		unsigned char ch = 0;
+		fflush( stdin );
+		scanf("%c", &ch);
 		if (ch == TERMINATE)
 			break;
 
@@ -164,7 +179,8 @@ unsigned short InputFromUser(void) {
 
 	do {
 		printf("%u번째 자리 숫자를 입력하세요 --->  ", i + 1);
-		nUser[i] = _getch();	// 값을 입력받는다.
+		fflush( stdin );
+		scanf("%1c", &nUser[i]);	// 값을 입력받는다.
 		if (isdigit(nUser[i])) {	// 숫자값으로 정확하게 입력했는지 검사한다.
 			nUser[i] -= '0';		// ASCII 코드값을 0 ~ 9 사이의 값으로 변환해야 한다.
 			printf("%u\n", nUser[i++]);	// 정상적인 입력이면 인덱스를 1증가하여 새로운 자릿수의 값을 입력받는다.
